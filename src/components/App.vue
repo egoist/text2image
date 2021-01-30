@@ -24,16 +24,14 @@
       <div class="w-6/12 h-full">
         <div ref="editorRef" class="h-full"></div>
       </div>
-      <div class="w-6/12 p-5">
-        <div ref="previewWrapperRef">
-          <div class="page-wrap" ref="previewRef">
-            <div class="page-border">
-              <span class="wrap-top"></span>
-              <span class="wrap-bottom"></span>
-              <span class="wrap-left"></span>
-              <span class="wrap-right"></span>
-              <div class="page-content prose" v-html="html"></div>
-            </div>
+      <div class="w-6/12 p-5 h-full overflow-auto">
+        <div class="page-wrap" ref="previewRef">
+          <div class="page-border">
+            <span class="wrap-top"></span>
+            <span class="wrap-bottom"></span>
+            <span class="wrap-left"></span>
+            <span class="wrap-right"></span>
+            <div class="page-content prose" v-html="html"></div>
           </div>
         </div>
       </div>
@@ -110,15 +108,13 @@ export default defineComponent({
 }
 
 .page-wrap {
-  width: 660px;
+  max-width: 660px;
   position: relative;
   font-size: 23px;
   color: #645647;
   background: #fffcf6;
   border-top: 1px solid #fffcf6;
   font-family: 'PingFang SC', Helvetica, ST-Heiti, 'Microsoft Yahei';
-  border-radius: 4px;
-  box-shadow: 0 3px 8px rgb(69 18 10 / 40%);
   padding: 33px 19px 33px 19px;
 }
 
