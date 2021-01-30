@@ -1,4 +1,9 @@
 {
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  },
   "devDependencies": {
     "@egoist/prettier-config": "^0.1.0",
     "@tailwindcss/typography": "^0.4.0",
