@@ -1,3 +1,53 @@
+<script lang="ts" setup>
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import * as monaco from 'monaco-editor'
+import marked from 'marked'
+import Prism from 'prismjs'
+import domToImage from 'dom-to-image'
+import 'prismjs/themes/prism-tomorrow.css'
+
+const editorRef = ref<HTMLDivElement>()
+let editor: monaco.editor.IStandaloneCodeEditor | undefined
+
+const previewRef = ref<HTMLDivElement>()
+
+const inputText = ref('Type text here, with **markdown** support..')
+
+onMounted(() => {
+  editor = monaco.editor.create(editorRef.value, {
+    value: inputText.value,
+    language: 'markdown',
+    wordWrap: 'on',
+  })
+
+  editor.onDidChangeModelContent((e) => {
+    inputText.value = editor.getModel().getValue()
+  })
+})
+
+onBeforeUnmount(() => {
+  editor?.dispose()
+})
+
+const save = () => {
+  domToImage.toJpeg(previewRef.value, {}).then((dataUrl) => {
+    const link = document.createElement('a')
+    link.download = 'image.jpg'
+    link.href = dataUrl
+    link.click()
+  })
+}
+
+const html = computed(() =>
+  marked(inputText.value, {
+    highlight(code, lang) {
+      const language = Prism.languages[lang] || Prism.languages.markup
+      return Prism.highlight(code, language, lang)
+    },
+  }),
+)
+</script>
+
 <template>
   <div class="h-screen">
     <header class="border-b flex items-center justify-between px-5 header">
@@ -38,65 +88,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { ref, onMounted, onBeforeUnmount, defineComponent, computed } from 'vue'
-import * as monaco from 'monaco-editor'
-import marked from 'marked'
-import Prism from 'prismjs'
-import domToImage from 'dom-to-image'
-import 'prismjs/themes/prism-tomorrow.css'
-
-export default defineComponent({
-  setup() {
-    const editorRef = ref<HTMLDivElement>()
-    let editor: monaco.editor.IStandaloneCodeEditor | undefined
-
-    const previewRef = ref<HTMLDivElement>()
-
-    const inputText = ref('Type text here, with **markdown** support..')
-
-    onMounted(() => {
-      editor = monaco.editor.create(editorRef.value, {
-        value: inputText.value,
-        language: 'markdown',
-        wordWrap: 'on',
-      })
-
-      editor.onDidChangeModelContent((e) => {
-        inputText.value = editor.getModel().getValue()
-      })
-    })
-
-    onBeforeUnmount(() => {
-      editor?.dispose()
-    })
-
-    const save = () => {
-      domToImage.toJpeg(previewRef.value, {}).then((dataUrl) => {
-        const link = document.createElement('a')
-        link.download = 'image.jpg'
-        link.href = dataUrl
-        link.click()
-      })
-    }
-
-    return {
-      editorRef,
-      previewRef,
-      save,
-      html: computed(() =>
-        marked(inputText.value, {
-          highlight(code, lang) {
-            const language = Prism.languages[lang] || Prism.languages.markup
-            return Prism.highlight(code, language, lang)
-          },
-        }),
-      ),
-    }
-  },
-})
-</script>
 
 <style scoped>
 .header {
