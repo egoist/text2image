@@ -4,7 +4,9 @@ import * as monaco from 'monaco-editor'
 import marked from 'marked'
 import Prism from 'prismjs'
 import domToImage from 'dom-to-image'
+import { createSnackbar } from '@snackbar/core'
 import 'prismjs/themes/prism-tomorrow.css'
+import '@snackbar/core/dist/snackbar.css'
 
 const editorRef = ref<HTMLDivElement>()
 let editor: monaco.editor.IStandaloneCodeEditor | undefined
@@ -38,6 +40,30 @@ const save = () => {
   })
 }
 
+const copy = async () => {
+  try {
+    const blob = await domToImage.toBlob(previewRef.value, {})
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        [blob.type]: blob,
+      }),
+    ])
+    createSnackbar('Image copied.', {
+      theme: {
+        actionColor: 'green',
+      },
+      timeout: 5000,
+    })
+  } catch (error) {
+    createSnackbar(error.message, {
+      theme: {
+        actionColor: 'red',
+      },
+      timeout: 5000,
+    })
+  }
+}
+
 const html = computed(() =>
   marked(inputText.value, {
     highlight(code, lang) {
@@ -61,12 +87,45 @@ const html = computed(() =>
           >GitHub</a
         >
       </div>
-      <div>
+      <div class="space-x-3 flex items-center">
+        <button
+          @click="copy"
+          class="inline-flex items-center space-x-2 border rounded-md px-4 h-10 text-white bg-gray-400"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            ></path></svg
+          ><span>Copy Image</span>
+        </button>
         <button
           @click="save"
-          class="border rounded-md px-4 h-10 text-white bg-blue-400"
+          class="flex items-center space-x-2 border rounded-md px-4 h-10 text-white bg-blue-400"
         >
-          Save Image
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+            ></path>
+          </svg>
+          <span>Save Image</span>
         </button>
       </div>
     </header>
