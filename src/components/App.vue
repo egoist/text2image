@@ -62,6 +62,7 @@ export default defineComponent({
       editor = monaco.editor.create(editorRef.value, {
         value: inputText.value,
         language: 'markdown',
+        wordWrap: 'on',
       })
 
       editor.onDidChangeModelContent((e) => {
