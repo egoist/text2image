@@ -1,6 +1,7 @@
 import vue from '@vitejs/plugin-vue'
+import windicss from 'vite-plugin-windicss'
 
 export default {
-  plugins: [vue()],
+  plugins: [vue(), windicss()],
   optimizeDeps: {},
 }

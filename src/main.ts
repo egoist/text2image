@@ -1,4 +1,4 @@
-import './css/tailwind.css'
+import 'windi.css'
 import { createApp } from 'vue'
 import App from './components/App.vue'
 
