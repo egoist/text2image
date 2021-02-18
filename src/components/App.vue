@@ -3,9 +3,8 @@ import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import * as monaco from 'monaco-editor'
 import marked from 'marked'
 import Prism from 'prismjs'
-import domToImage from 'dom-to-image'
+import { toBlob, toJpeg } from 'dom-to-image-retina'
 import { createSnackbar } from '@snackbar/core'
-import * as changedpi from 'changedpi'
 import 'prismjs/themes/prism-tomorrow.css'
 import '@snackbar/core/dist/snackbar.css'
 
@@ -32,33 +31,8 @@ onBeforeUnmount(() => {
   editor?.dispose()
 })
 
-const blobToDataURL = (blob: Blob): Promise<string> =>
-  new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.onload = function (e) {
-      resolve(e.target!.result as string)
-    }
-    reader.readAsDataURL(blob)
-  })
-
-const toBlob = async () => {
-  const el = previewRef.value!
-  const blob = await domToImage.toBlob(el, {
-    width: el.offsetWidth * 2,
-    height: el.offsetHeight * 2,
-    style: {
-      width: `${el.offsetWidth}px`,
-      height: `${el.offsetHeight}px`,
-      transform: `scale(2)`,
-      transformOrigin: `top left`,
-    },
-  })
-  return changedpi.changeDpiBlob(blob, 72 * 2)
-}
-
 const save = async () => {
-  const blob = await toBlob()
-  const dataUrl = await blobToDataURL(blob)
+  const dataUrl = await toJpeg(previewRef.value!)
   const link = document.createElement('a')
   link.download = 'image.jpg'
   link.href = dataUrl
@@ -67,7 +41,7 @@ const save = async () => {
 
 const copy = async () => {
   try {
-    const blob = await toBlob()
+    const blob = await toBlob(previewRef.value!)
     await navigator.clipboard.write([
       new ClipboardItem({
         [blob.type]: blob,
