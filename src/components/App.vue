@@ -63,14 +63,20 @@ const copy = async () => {
   }
 }
 
-const html = computed(() =>
-  marked(inputText.value, {
+const html = computed(() => {
+  const renderer = new marked.Renderer()
+  const oldImage = renderer.image.bind(renderer)
+  renderer.image = (href, title, text) => {
+    return oldImage(`/proxy?url=${href}`, title, text)
+  }
+  return marked(inputText.value, {
     highlight(code, lang) {
       const language = Prism.languages[lang] || Prism.languages.markup
       return Prism.highlight(code, language, lang)
     },
-  }),
-)
+    renderer,
+  })
+})
 </script>
 
 <template>
