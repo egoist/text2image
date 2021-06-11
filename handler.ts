@@ -19,7 +19,16 @@ function isUrl(string: string) {
   }
 }
 
-export const handler: Handler = async (req, res, next) => {
+const handleError = (handler: Handler): Handler => async (req, res, next) => {
+  try {
+    await handler(req, res, next)
+  } catch (error) {
+    res.statusCode = 500
+    res.end(error.message)
+  }
+}
+
+export const handler: Handler = handleError(async (req, res, next) => {
   if (req.path === '/proxy') {
     const url = req.query.url as string | undefined
     if (!url || !isUrl(url)) {
@@ -36,4 +45,4 @@ export const handler: Handler = async (req, res, next) => {
     return
   }
   next()
-}
+})

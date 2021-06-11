@@ -1,0 +1,7 @@
+.prose ul {
+  @apply pl-0;
+}
+
+.prose blockquote {
+  @apply ml-1;
+}
